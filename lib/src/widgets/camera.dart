@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:math';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
@@ -46,7 +45,9 @@ class CameraState extends State<Camera> {
         if (snapshot.connectionState == ConnectionState.done) {
           return CameraPreview(_controller);
         } else {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
         }
       },
     );
