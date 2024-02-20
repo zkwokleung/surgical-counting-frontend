@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:camera/camera.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:surgical_counting/src/widgets/camera.dart';
 import 'package:surgical_counting/src/widgets/dash_card.dart';
@@ -19,8 +22,40 @@ class DetectionScreen extends StatefulWidget {
 }
 
 class _DetectionScreenState extends State<DetectionScreen> {
-  // Camera on and off
+  // Cameras
   bool isCameraOn = false;
+  late CameraController _cameraController;
+  late Future<void> _initializeCameraControllerFuture;
+
+  // Image
+  XFile? imageFile;
+
+  void toggleCamera() async {
+    setState(() {
+      isCameraOn = !isCameraOn;
+    });
+  }
+
+  Future<XFile?> captureImage() async {
+    try {
+      await _initializeCameraControllerFuture;
+
+      return await _cameraController.takePicture();
+    } catch (e) {
+      return null;
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _cameraController = CameraController(
+      widget.camera,
+      ResolutionPreset.medium,
+    );
+
+    _initializeCameraControllerFuture = _cameraController.initialize();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,12 +77,7 @@ class _DetectionScreenState extends State<DetectionScreen> {
                       title: AppLocalizations.of(context)!.camera,
                       backgroundColor: Colors.blue[800],
                       floatingActionButton: FloatingActionButton(
-                        onPressed: () async {
-                          // Toggle the camera on and off
-                          setState(() {
-                            isCameraOn = !isCameraOn;
-                          });
-                        },
+                        onPressed: toggleCamera,
                         child: const Icon(Icons.camera_alt),
                       ),
                       child: isCameraOn
@@ -59,9 +89,13 @@ class _DetectionScreenState extends State<DetectionScreen> {
                     child: DashCard(
                       title: AppLocalizations.of(context)!.detection,
                       backgroundColor: Colors.green[800],
-                      child: Text(
-                        AppLocalizations.of(context)!.contentUnavailable,
-                      ),
+                      child: imageFile != null
+                          ? (kIsWeb)
+                              ? Image.network(imageFile!.path)
+                              : Image.file(
+                                  File(imageFile!.path),
+                                )
+                          : const Icon(Icons.image),
                     ),
                   ),
                 ],
@@ -87,8 +121,29 @@ class _DetectionScreenState extends State<DetectionScreen> {
                     child: DashCard(
                       title: AppLocalizations.of(context)!.controlPanel,
                       backgroundColor: Colors.yellow[800],
-                      child: Text(
-                        AppLocalizations.of(context)!.contentUnavailable,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: <Widget>[
+                          ElevatedButton(
+                            onPressed: () async {
+                              final XFile? file = await captureImage();
+                              setState(
+                                () {
+                                  imageFile = file;
+                                },
+                              );
+                            },
+                            child: Text(AppLocalizations.of(context)!.capture),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              setState(() {
+                                imageFile = null;
+                              });
+                            },
+                            child: Text(AppLocalizations.of(context)!.clear),
+                          ),
+                        ],
                       ),
                     ),
                   ),

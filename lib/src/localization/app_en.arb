@@ -15,6 +15,18 @@
   "@results": {
     "description": ""
   },
+  "capture": "Capture",
+  "@capture": {
+    "description": ""
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": ""
+  },
+  "clear": "Clear",
+  "@clear": {
+    "description": ""
+  },
   "contentUnavailable": "Content Unavailable",
   "@contentUnavailable": {
     "description": "Displayed when the content is not available"
