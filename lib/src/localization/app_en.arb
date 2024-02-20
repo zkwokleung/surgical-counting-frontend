@@ -2,5 +2,53 @@
   "appTitle": "Surgical Counting",
   "@appTitle": {
     "description": "The title of the application"
+  },
+  "camera": "Camera",
+  "@camera": {
+    "description": ""
+  },
+  "detection": "Detection",
+  "@detection": {
+    "description": ""
+  },
+  "results": "Results",
+  "@results": {
+    "description": ""
+  },
+  "contentUnavailable": "Content Unavailable",
+  "@contentUnavailable": {
+    "description": "Displayed when the content is not available"
+  },
+  "settings": "Settings",
+  "@settings": {
+    "description": ""
+  },
+  "about": "About",
+  "@about": {
+    "description": ""
+  },
+  "information": "Information",
+  "@information": {
+    "description": ""
+  },
+  "controlPanel": "Control Panel",
+  "@controlPanel": {
+    "description": ""
+  },
+  "language": "Language",
+  "@language": {
+    "description": ""
+  },
+  "english": "English",
+  "@english": {
+    "description": ""
+  },
+  "spanish": "Spanish",
+  "@spanish": {
+    "description": ""
+  },
+  "french": "French",
+  "@french": {
+    "description": ""
   }
 }

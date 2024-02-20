@@ -42,13 +42,9 @@ class CameraState extends State<Camera> {
     return FutureBuilder<void>(
       future: _initializeControllerFuture,
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          return CameraPreview(_controller);
-        } else {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        }
+        return snapshot.connectionState == ConnectionState.done
+            ? CameraPreview(_controller)
+            : const CircularProgressIndicator();
       },
     );
   }
