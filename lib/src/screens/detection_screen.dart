@@ -7,6 +7,8 @@ import 'package:surgical_counting/src/widgets/camera.dart';
 import 'package:surgical_counting/src/widgets/dash_card.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
+import '../services/predict.dart';
+
 class DetectionScreen extends StatefulWidget {
   const DetectionScreen({
     super.key,
@@ -30,19 +32,41 @@ class _DetectionScreenState extends State<DetectionScreen> {
   // Image
   XFile? imageFile;
 
+  // Info
+  String info = '';
+
   void toggleCamera() async {
     setState(() {
       isCameraOn = !isCameraOn;
     });
   }
 
-  Future<XFile?> captureImage() async {
+  Future<XFile> captureImage() async {
     try {
       await _initializeCameraControllerFuture;
 
       return await _cameraController.takePicture();
     } catch (e) {
-      return null;
+      if (kDebugMode) {
+        print(e);
+      }
+      throw Exception('Failed to capture image');
+    }
+  }
+
+  void predict() async {
+    try {
+      final XFile file = await captureImage();
+
+      final response = await postPrediction(file);
+      setState(() {
+        imageFile = response.image;
+        info = response.objects.toString();
+      });
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
     }
   }
 
@@ -109,39 +133,41 @@ class _DetectionScreenState extends State<DetectionScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
                   Expanded(
+                    flex: 8,
                     child: DashCard(
                       title: AppLocalizations.of(context)!.information,
                       backgroundColor: Colors.red[800],
-                      child: Text(
-                        AppLocalizations.of(context)!.contentUnavailable,
-                      ),
+                      child: info.isNotEmpty
+                          ? Text(info)
+                          : Text(
+                              AppLocalizations.of(context)!.contentUnavailable,
+                            ),
                     ),
                   ),
                   Expanded(
+                    flex: 2,
                     child: DashCard(
                       title: AppLocalizations.of(context)!.controlPanel,
                       backgroundColor: Colors.yellow[800],
-                      child: Column(
+                      child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: <Widget>[
-                          ElevatedButton(
-                            onPressed: () async {
-                              final XFile? file = await captureImage();
-                              setState(
-                                () {
-                                  imageFile = file;
-                                },
-                              );
-                            },
-                            child: Text(AppLocalizations.of(context)!.capture),
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: predict,
+                              child:
+                                  Text(AppLocalizations.of(context)!.capture),
+                            ),
                           ),
-                          ElevatedButton(
-                            onPressed: () {
-                              setState(() {
-                                imageFile = null;
-                              });
-                            },
-                            child: Text(AppLocalizations.of(context)!.clear),
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: () {
+                                setState(() {
+                                  imageFile = null;
+                                });
+                              },
+                              child: Text(AppLocalizations.of(context)!.clear),
+                            ),
                           ),
                         ],
                       ),
