@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:surgical_counting/src/constants/instruments.dart';
 import 'package:surgical_counting/src/widgets/camera.dart';
 import 'package:surgical_counting/src/widgets/dash_card.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -96,10 +97,11 @@ class _DetectionScreenState extends State<DetectionScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
+                  // Camera
                   Expanded(
                     child: DashCard(
                       title: AppLocalizations.of(context)!.camera,
-                      backgroundColor: Colors.blue[800],
+                      backgroundColor: Colors.grey[600],
                       floatingActionButton: FloatingActionButton(
                         onPressed: toggleCamera,
                         child: const Icon(Icons.camera_alt),
@@ -109,10 +111,12 @@ class _DetectionScreenState extends State<DetectionScreen> {
                           : const Icon(Icons.camera_alt),
                     ),
                   ),
+
+                  // Result
                   Expanded(
                     child: DashCard(
                       title: AppLocalizations.of(context)!.detection,
-                      backgroundColor: Colors.green[800],
+                      backgroundColor: Colors.grey[600],
                       child: imageFile != null
                           ? (kIsWeb)
                               ? Image.network(imageFile!.path)
@@ -132,23 +136,58 @@ class _DetectionScreenState extends State<DetectionScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
+                  // Information
                   Expanded(
                     flex: 8,
                     child: DashCard(
                       title: AppLocalizations.of(context)!.information,
-                      backgroundColor: Colors.red[800],
-                      child: info.isNotEmpty
-                          ? Text(info)
-                          : Text(
-                              AppLocalizations.of(context)!.contentUnavailable,
+                      backgroundColor: Colors.grey[600],
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Table(
+                          border: TableBorder.all(),
+                          columnWidths: const <int, TableColumnWidth>{
+                            // Name
+                            0: FlexColumnWidth(0.2),
+                            // Order
+                            1: FlexColumnWidth(0.75),
+                            // Quantity
+                            2: FlexColumnWidth(0.05),
+                          },
+                          children: <TableRow>[
+                            TableRow(
+                              children: <Widget>[
+                                Text(AppLocalizations.of(context)!.object),
+                                Text(AppLocalizations.of(context)!.count),
+                              ],
                             ),
+                            for (final object in surgical_instruments.entries)
+                              TableRow(
+                                children: <Widget>[
+                                  Padding(
+                                    padding: const EdgeInsets.fromLTRB(
+                                        8.0, 2.0, 8.0, 2.0),
+                                    child: Text(object.value['name']),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.fromLTRB(
+                                        8.0, 2.0, 8.0, 2.0),
+                                    child: Text(object.value.toString()),
+                                  ),
+                                ],
+                              ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
+
+                  // Control Panel
                   Expanded(
                     flex: 2,
                     child: DashCard(
                       title: AppLocalizations.of(context)!.controlPanel,
-                      backgroundColor: Colors.yellow[800],
+                      backgroundColor: Colors.grey[600],
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: <Widget>[
