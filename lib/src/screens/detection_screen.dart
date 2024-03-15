@@ -4,6 +4,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:surgical_counting/src/constants/instruments.dart';
+import 'package:surgical_counting/src/services/utils.dart';
 import 'package:surgical_counting/src/widgets/camera.dart';
 import 'package:surgical_counting/src/widgets/dash_card.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -36,6 +37,9 @@ class _DetectionScreenState extends State<DetectionScreen> {
   // Info
   String info = '';
 
+  // Server status
+  bool isServerOn = false;
+
   void toggleCamera() async {
     setState(() {
       isCameraOn = !isCameraOn;
@@ -52,6 +56,19 @@ class _DetectionScreenState extends State<DetectionScreen> {
         print(e);
       }
       throw Exception('Failed to capture image');
+    }
+  }
+
+  void checkServerStatus() async {
+    try {
+      final status = await getServerStatus();
+      setState(() {
+        isServerOn = status;
+      });
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
     }
   }
 
@@ -178,6 +195,35 @@ class _DetectionScreenState extends State<DetectionScreen> {
                               ),
                           ],
                         ),
+                      ),
+                    ),
+                  ),
+
+                  // Server Status
+                  Expanded(
+                    flex: 2,
+                    child: DashCard(
+                      title: AppLocalizations.of(context)!.serverStatus,
+                      backgroundColor: Colors.grey[600],
+                      floatingActionButton: FloatingActionButton(
+                        onPressed: checkServerStatus,
+                        child: const Icon(Icons.refresh),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Text('${AppLocalizations.of(context)!.status}: '),
+                          Text(
+                            isServerOn
+                                ? AppLocalizations.of(context)!.serverStatusOk
+                                : AppLocalizations.of(context)!
+                                    .serverStatusUnavailable,
+                            style: TextStyle(
+                                color: isServerOn
+                                    ? Colors.green
+                                    : Colors.red[900]),
+                          ),
+                        ],
                       ),
                     ),
                   ),

@@ -70,5 +70,25 @@
   "count": "Count",
   "@count": {
     "description": ""
+  },
+  "serverStatus": "Server Status",
+  "@serverStatus": {
+    "description": ""
+  },
+  "status": "status",
+  "@status": {
+    "description": ""
+  },
+  "serverStatusOk": "OK",
+  "@ok": {
+    "description": ""
+  },
+  "serverStatusError": "Error",
+  "@error": {
+    "description": ""
+  },
+  "serverStatusUnavailable": "Unavailable",
+  "@unavailable": {
+    "description": ""
   }
 }
