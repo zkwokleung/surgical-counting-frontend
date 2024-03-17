@@ -71,6 +71,14 @@
   "@count": {
     "description": ""
   },
+  "quantity": "Qty.",
+  "@quantity": {
+    "description": ""
+  },
+  "order": "Order",
+  "@order": {
+    "description": ""
+  },
   "serverStatus": "Server Status",
   "@serverStatus": {
     "description": ""

@@ -3,13 +3,14 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:surgical_counting/src/constants/instruments.dart';
+import 'package:surgical_counting/src/models/instruments.dart';
+import 'package:surgical_counting/src/services/predict.dart';
 import 'package:surgical_counting/src/services/utils.dart';
 import 'package:surgical_counting/src/widgets/camera.dart';
 import 'package:surgical_counting/src/widgets/dash_card.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-
-import '../services/predict.dart';
 
 class DetectionScreen extends StatefulWidget {
   const DetectionScreen({
@@ -39,6 +40,9 @@ class _DetectionScreenState extends State<DetectionScreen> {
 
   // Server status
   bool isServerOn = false;
+
+  // Instrument status
+  Map<String, dynamic> instrumentsStatus = defaultInstrumentsStatus;
 
   void toggleCamera() async {
     setState(() {
@@ -91,12 +95,42 @@ class _DetectionScreenState extends State<DetectionScreen> {
   @override
   void initState() {
     super.initState();
+
+    // Variables
+    instrumentsStatus['iris_scissor']['order'] = 100;
+
+    // System Chrome
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeRight,
+      DeviceOrientation.landscapeLeft,
+    ]);
+
+    // Camera initialization
     _cameraController = CameraController(
       widget.camera,
       ResolutionPreset.medium,
     );
 
     _initializeCameraControllerFuture = _cameraController.initialize();
+
+    // Lock camera orientation
+    _cameraController.lockCaptureOrientation(DeviceOrientation.portraitUp);
+  }
+
+  @override
+  void dispose() {
+    // System Chrome
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.landscapeRight,
+      DeviceOrientation.landscapeLeft,
+    ]);
+
+    // Camera
+    _cameraController.dispose();
+
+    super.dispose();
   }
 
   @override
@@ -110,7 +144,7 @@ class _DetectionScreenState extends State<DetectionScreen> {
           children: <Widget>[
             // Left Panel
             Expanded(
-              flex: 6,
+              flex: 5,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
@@ -149,7 +183,7 @@ class _DetectionScreenState extends State<DetectionScreen> {
 
             // Right Panel
             Expanded(
-              flex: 4,
+              flex: 5,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
@@ -167,29 +201,79 @@ class _DetectionScreenState extends State<DetectionScreen> {
                             // Name
                             0: FlexColumnWidth(0.2),
                             // Order
-                            1: FlexColumnWidth(0.75),
+                            1: FlexColumnWidth(0.7),
                             // Quantity
-                            2: FlexColumnWidth(0.05),
+                            2: FlexColumnWidth(0.1),
                           },
                           children: <TableRow>[
                             TableRow(
                               children: <Widget>[
-                                Text(AppLocalizations.of(context)!.object),
-                                Text(AppLocalizations.of(context)!.count),
+                                Padding(
+                                  padding: const EdgeInsets.fromLTRB(
+                                      4.0, 4.0, 2.0, 2.0),
+                                  child: Text(
+                                      AppLocalizations.of(context)!.object),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.fromLTRB(
+                                      4.0, 4.0, 2.0, 2.0),
+                                  child:
+                                      Text(AppLocalizations.of(context)!.order),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.fromLTRB(
+                                      2.0, 2.0, 2.0, 2.0),
+                                  child: Center(
+                                      child: Text(AppLocalizations.of(context)!
+                                          .quantity)),
+                                ),
                               ],
                             ),
-                            for (final object in surgical_instruments.entries)
+                            for (final key in surgicalInstruments.keys)
                               TableRow(
                                 children: <Widget>[
+                                  // Name
                                   Padding(
                                     padding: const EdgeInsets.fromLTRB(
                                         8.0, 2.0, 8.0, 2.0),
-                                    child: Text(object.value['name']),
+                                    child:
+                                        Text(surgicalInstruments[key]!['name']),
                                   ),
+
+                                  // Order
                                   Padding(
                                     padding: const EdgeInsets.fromLTRB(
                                         8.0, 2.0, 8.0, 2.0),
-                                    child: Text(object.value.toString()),
+                                    child: Text(
+                                      style: TextStyle(
+                                        color:
+                                            instrumentsStatus[key]!['order'] ==
+                                                    surgicalInstruments[key]![
+                                                        'order']
+                                                ? Colors.green
+                                                : Colors.red[900],
+                                      ),
+                                      instrumentsStatus[key]!['qty'] < 0
+                                          ? '-'
+                                          : instrumentsStatus[key]!['qty']
+                                              .toString(),
+                                    ),
+                                  ),
+
+                                  // Quantity
+                                  Padding(
+                                    padding: const EdgeInsets.fromLTRB(
+                                        8.0, 2.0, 8.0, 2.0),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: <Widget>[
+                                        Text(
+                                            "${instrumentsStatus[key]!['qty']}"),
+                                        Text(
+                                            "/${surgicalInstruments[key]!['qty']}"),
+                                      ],
+                                    ),
                                   ),
                                 ],
                               ),
@@ -237,14 +321,8 @@ class _DetectionScreenState extends State<DetectionScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: <Widget>[
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: predict,
-                              child:
-                                  Text(AppLocalizations.of(context)!.capture),
-                            ),
-                          ),
-                          Expanded(
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
                             child: ElevatedButton(
                               onPressed: () {
                                 setState(() {
@@ -252,6 +330,13 @@ class _DetectionScreenState extends State<DetectionScreen> {
                                 });
                               },
                               child: Text(AppLocalizations.of(context)!.clear),
+                            ),
+                          ),
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: predict,
+                              child:
+                                  Text(AppLocalizations.of(context)!.capture),
                             ),
                           ),
                         ],
