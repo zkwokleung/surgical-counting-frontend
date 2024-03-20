@@ -5,7 +5,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:surgical_counting/src/constants/instruments.dart';
-import 'package:surgical_counting/src/models/instruments.dart';
 import 'package:surgical_counting/src/services/predict.dart';
 import 'package:surgical_counting/src/services/utils.dart';
 import 'package:surgical_counting/src/widgets/camera.dart';
@@ -42,7 +41,7 @@ class _DetectionScreenState extends State<DetectionScreen> {
   bool isServerOn = false;
 
   // Instrument status
-  Map<String, dynamic> instrumentsStatus = defaultInstrumentsStatus;
+  late Map<String, dynamic> instrumentsStatus = {};
 
   void toggleCamera() async {
     setState(() {
@@ -97,7 +96,8 @@ class _DetectionScreenState extends State<DetectionScreen> {
     super.initState();
 
     // Variables
-    instrumentsStatus['iris_scissor']['order'] = 100;
+    instrumentsStatus = Map.from(surgicalInstruments
+        .map((key, value) => MapEntry(key, {'order': -1, 'qty': 0})));
 
     // System Chrome
     SystemChrome.setPreferredOrientations([
@@ -114,7 +114,11 @@ class _DetectionScreenState extends State<DetectionScreen> {
     _initializeCameraControllerFuture = _cameraController.initialize();
 
     // Lock camera orientation
-    _cameraController.lockCaptureOrientation(DeviceOrientation.portraitUp);
+    // If it is not running on chrome
+    if (!kIsWeb) {
+      _cameraController
+          .lockCaptureOrientation(DeviceOrientation.landscapeRight);
+    }
   }
 
   @override
@@ -253,9 +257,9 @@ class _DetectionScreenState extends State<DetectionScreen> {
                                                 ? Colors.green
                                                 : Colors.red[900],
                                       ),
-                                      instrumentsStatus[key]!['qty'] < 0
-                                          ? '-'
-                                          : instrumentsStatus[key]!['qty']
+                                      instrumentsStatus[key]!['order'] < 0
+                                          ? 'DNE'
+                                          : instrumentsStatus[key]!['order']
                                               .toString(),
                                     ),
                                   ),
@@ -269,6 +273,14 @@ class _DetectionScreenState extends State<DetectionScreen> {
                                           MainAxisAlignment.center,
                                       children: <Widget>[
                                         Text(
+                                            style: TextStyle(
+                                              color: instrumentsStatus[key]![
+                                                          'qty'] ==
+                                                      surgicalInstruments[key]![
+                                                          'qty']
+                                                  ? Colors.green
+                                                  : Colors.red[900],
+                                            ),
                                             "${instrumentsStatus[key]!['qty']}"),
                                         Text(
                                             "/${surgicalInstruments[key]!['qty']}"),

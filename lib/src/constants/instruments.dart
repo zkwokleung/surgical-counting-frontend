@@ -71,17 +71,3 @@ const Map<String, Map<String, dynamic>> surgicalInstruments = {
     'qty': 1,
   },
 };
-
-const Map<String, dynamic> initInstrumentStatus = {'order': -1, 'qty': 0};
-
-const Map<String, dynamic> defaultInstrumentsStatus = {
-  'iris_scissor': initInstrumentStatus,
-  'needle_holder': initInstrumentStatus,
-  'bip_fx': initInstrumentStatus,
-  'speculum': initInstrumentStatus,
-  'con_scissor': initInstrumentStatus,
-  'spatula': initInstrumentStatus,
-  'cap_fx': initInstrumentStatus,
-  'suction_cannula': initInstrumentStatus,
-  'curved_cannula': initInstrumentStatus,
-};
