@@ -5,11 +5,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:surgical_counting/src/constants/instruments.dart';
+import 'package:surgical_counting/src/models/instruments.dart';
 import 'package:surgical_counting/src/services/predict.dart';
 import 'package:surgical_counting/src/services/utils.dart';
 import 'package:surgical_counting/src/widgets/camera.dart';
 import 'package:surgical_counting/src/widgets/dash_card.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:surgical_counting/src/widgets/detection_information_pannel.dart';
+import 'package:surgical_counting/src/widgets/detection_server_status.dart';
 
 class DetectionScreen extends StatefulWidget {
   const DetectionScreen({
@@ -97,7 +100,7 @@ class _DetectionScreenState extends State<DetectionScreen> {
 
     // Variables
     instrumentsStatus = Map.from(surgicalInstruments
-        .map((key, value) => MapEntry(key, {'order': -1, 'qty': 0})));
+        .map((key, value) => MapEntry(key, InstrumentStatus())));
 
     // System Chrome
     SystemChrome.setPreferredOrientations([
@@ -194,135 +197,13 @@ class _DetectionScreenState extends State<DetectionScreen> {
                   // Information
                   Expanded(
                     flex: 8,
-                    child: DashCard(
-                      title: AppLocalizations.of(context)!.information,
-                      backgroundColor: Colors.grey[600],
-                      child: SingleChildScrollView(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Table(
-                          border: TableBorder.all(),
-                          columnWidths: const <int, TableColumnWidth>{
-                            // Name
-                            0: FlexColumnWidth(0.2),
-                            // Order
-                            1: FlexColumnWidth(0.7),
-                            // Quantity
-                            2: FlexColumnWidth(0.1),
-                          },
-                          children: <TableRow>[
-                            TableRow(
-                              children: <Widget>[
-                                Padding(
-                                  padding: const EdgeInsets.fromLTRB(
-                                      4.0, 4.0, 2.0, 2.0),
-                                  child: Text(
-                                      AppLocalizations.of(context)!.object),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.fromLTRB(
-                                      4.0, 4.0, 2.0, 2.0),
-                                  child:
-                                      Text(AppLocalizations.of(context)!.order),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.fromLTRB(
-                                      2.0, 2.0, 2.0, 2.0),
-                                  child: Center(
-                                      child: Text(AppLocalizations.of(context)!
-                                          .quantity)),
-                                ),
-                              ],
-                            ),
-                            for (final key in surgicalInstruments.keys)
-                              TableRow(
-                                children: <Widget>[
-                                  // Name
-                                  Padding(
-                                    padding: const EdgeInsets.fromLTRB(
-                                        8.0, 2.0, 8.0, 2.0),
-                                    child:
-                                        Text(surgicalInstruments[key]!['name']),
-                                  ),
-
-                                  // Order
-                                  Padding(
-                                    padding: const EdgeInsets.fromLTRB(
-                                        8.0, 2.0, 8.0, 2.0),
-                                    child: Text(
-                                      style: TextStyle(
-                                        color:
-                                            instrumentsStatus[key]!['order'] ==
-                                                    surgicalInstruments[key]![
-                                                        'order']
-                                                ? Colors.green
-                                                : Colors.red[900],
-                                      ),
-                                      instrumentsStatus[key]!['order'] < 0
-                                          ? 'DNE'
-                                          : instrumentsStatus[key]!['order']
-                                              .toString(),
-                                    ),
-                                  ),
-
-                                  // Quantity
-                                  Padding(
-                                    padding: const EdgeInsets.fromLTRB(
-                                        8.0, 2.0, 8.0, 2.0),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: <Widget>[
-                                        Text(
-                                            style: TextStyle(
-                                              color: instrumentsStatus[key]![
-                                                          'qty'] ==
-                                                      surgicalInstruments[key]![
-                                                          'qty']
-                                                  ? Colors.green
-                                                  : Colors.red[900],
-                                            ),
-                                            "${instrumentsStatus[key]!['qty']}"),
-                                        Text(
-                                            "/${surgicalInstruments[key]!['qty']}"),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                          ],
-                        ),
-                      ),
+                    child: DetectionInformationPannel(
+                      instrumentsStatus: instrumentsStatus,
                     ),
                   ),
 
                   // Server Status
-                  Expanded(
-                    flex: 2,
-                    child: DashCard(
-                      title: AppLocalizations.of(context)!.serverStatus,
-                      backgroundColor: Colors.grey[600],
-                      floatingActionButton: FloatingActionButton(
-                        onPressed: checkServerStatus,
-                        child: const Icon(Icons.refresh),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Text('${AppLocalizations.of(context)!.status}: '),
-                          Text(
-                            isServerOn
-                                ? AppLocalizations.of(context)!.serverStatusOk
-                                : AppLocalizations.of(context)!
-                                    .serverStatusUnavailable,
-                            style: TextStyle(
-                                color: isServerOn
-                                    ? Colors.green
-                                    : Colors.red[900]),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                  Expanded(flex: 2, child: DetectionServerStatus()),
 
                   // Control Panel
                   Expanded(
