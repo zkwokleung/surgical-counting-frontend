@@ -46,6 +46,11 @@ class _DetectionScreenState extends State<DetectionScreen> {
   // Instrument status
   late Map<String, dynamic> instrumentsStatus = {};
 
+  void resetInstrumentsStatus() {
+    instrumentsStatus = Map.from(surgicalInstruments
+        .map((key, value) => MapEntry(key, InstrumentStatus())));
+  }
+
   void toggleCamera() async {
     setState(() {
       isCameraOn = !isCameraOn;
@@ -80,6 +85,8 @@ class _DetectionScreenState extends State<DetectionScreen> {
 
   void predict() async {
     try {
+      resetInstrumentsStatus();
+
       final XFile file = await captureImage();
 
       final response = await postPrediction(file);
@@ -87,6 +94,15 @@ class _DetectionScreenState extends State<DetectionScreen> {
         imageFile = response.image;
         info = response.objects.toString();
       });
+
+      // Update instruments status
+      for (int i = 0; i < response.objects.length; i++) {
+        final instrument = surgicalInstruments[response.objects[i].item2];
+        if (instrument != null) {
+          instrumentsStatus[response.objects[i].item2]!.qty += 1;
+          instrumentsStatus[response.objects[i].item2]!.order = i;
+        }
+      }
     } catch (e) {
       if (kDebugMode) {
         print(e);
@@ -99,8 +115,7 @@ class _DetectionScreenState extends State<DetectionScreen> {
     super.initState();
 
     // Variables
-    instrumentsStatus = Map.from(surgicalInstruments
-        .map((key, value) => MapEntry(key, InstrumentStatus())));
+    resetInstrumentsStatus();
 
     // System Chrome
     SystemChrome.setPreferredOrientations([
@@ -220,6 +235,7 @@ class _DetectionScreenState extends State<DetectionScreen> {
                               onPressed: () {
                                 setState(() {
                                   imageFile = null;
+                                  resetInstrumentsStatus();
                                 });
                               },
                               child: Text(AppLocalizations.of(context)!.clear),

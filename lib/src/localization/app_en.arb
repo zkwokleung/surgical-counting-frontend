@@ -43,6 +43,10 @@
   "@information": {
     "description": ""
   },
+  "informationDetectionInfo": "Detection information",
+  "@informationDetectionInfo": {
+    "description": ""
+  },
   "controlPanel": "Control Panel",
   "@controlPanel": {
     "description": ""
