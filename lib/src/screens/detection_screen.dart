@@ -181,7 +181,23 @@ class _DetectionScreenState extends State<DetectionScreen> {
                       ),
                       child: isCameraOn
                           ? Camera(camera: widget.camera)
-                          : const Icon(Icons.camera_alt),
+                          : Container(
+                              width: MediaQuery.of(context).size.width / 2.8,
+                              height: double.infinity,
+                              color: Colors.black,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  const Icon(
+                                    Icons.camera_alt,
+                                    color: Colors.white,
+                                  ),
+                                  Text(
+                                    AppLocalizations.of(context)!.camOffMsg,
+                                    style: const TextStyle(color: Colors.white),
+                                  ),
+                                ],
+                              )),
                     ),
                   ),
 
@@ -196,7 +212,24 @@ class _DetectionScreenState extends State<DetectionScreen> {
                               : Image.file(
                                   File(imageFile!.path),
                                 )
-                          : const Icon(Icons.image),
+                          : Container(
+                              color: Colors.black,
+                              width: MediaQuery.of(context).size.width / 2.8,
+                              height: double.infinity,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  const Icon(
+                                    Icons.image_not_supported,
+                                    color: Colors.white,
+                                  ),
+                                  Text(
+                                    AppLocalizations.of(context)!.noPreviewMsg,
+                                    style: const TextStyle(color: Colors.white),
+                                  ),
+                                ],
+                              ),
+                            ),
                     ),
                   ),
                 ],
@@ -218,7 +251,7 @@ class _DetectionScreenState extends State<DetectionScreen> {
                   ),
 
                   // Server Status
-                  Expanded(flex: 2, child: DetectionServerStatus()),
+                  const Expanded(flex: 2, child: DetectionServerStatus()),
 
                   // Control Panel
                   Expanded(

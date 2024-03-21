@@ -102,5 +102,13 @@
   "serverStatusUnavailable": "Unavailable",
   "@unavailable": {
     "description": ""
+  },
+  "camOffMsg": "Camera is off",
+  "@camOffMsg": {
+    "description": ""
+  },
+  "noPreviewMsg": "No preview available",
+  "@noPreviewMsg": {
+    "description": ""
   }
 }

@@ -78,10 +78,12 @@ class _DetectionInformationPannelState
                         color: verifyInstrumentsStatus(key)
                             ? Colors.green
                             : Colors.red[900],
-                        child: Icon(
-                          verifyInstrumentsStatus(key)
-                              ? Icons.check
-                              : Icons.close,
+                        child: Center(
+                          child: Icon(
+                            verifyInstrumentsStatus(key)
+                                ? Icons.check
+                                : Icons.close,
+                          ),
                         ),
                       ),
 
