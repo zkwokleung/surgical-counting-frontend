@@ -197,7 +197,8 @@ class _DetectionScreenState extends State<DetectionScreen> {
                                     style: const TextStyle(color: Colors.white),
                                   ),
                                 ],
-                              )),
+                              ),
+                            ),
                     ),
                   ),
 

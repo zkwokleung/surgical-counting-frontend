@@ -4,7 +4,7 @@ const Map<String, Map<String, dynamic>> surgicalInstruments = {
     'name': 'Iris Scissor',
     'description':
         'A small scissor with sharp blades used for cutting delicate tissue.',
-    'image': 'assets/images/instruments/iris_scissor.png',
+    'image': 'images/instruments/iris_scissor.jpg',
     'order': 0,
     'qty': 1,
   },
@@ -12,7 +12,7 @@ const Map<String, Map<String, dynamic>> surgicalInstruments = {
     "name": "Needle Holder",
     "description":
         "A surgical instrument used to hold a suturing needle for closing wounds during suturing and surgical procedures.",
-    "image": "assets/images/instruments/needle_holder.png",
+    "image": "images/instruments/needle_holder.jpg",
     "order": 1,
     'qty': 1,
   },
@@ -20,7 +20,7 @@ const Map<String, Map<String, dynamic>> surgicalInstruments = {
     "name": "Bipolar Forceps",
     "description":
         "A surgical instrument used to coagulate small blood vessels.",
-    "image": "assets/images/instruments/bip_fx.png",
+    "image": "images/instruments/bip_fx.jpg",
     "order": 2,
     'qty': 1,
   },
@@ -28,7 +28,7 @@ const Map<String, Map<String, dynamic>> surgicalInstruments = {
     "name": "Speculum",
     "description":
         "A medical tool for investigating body orifices, with a form dependent on the orifice for which it is designed.",
-    "image": "assets/images/instruments/speculum.png",
+    "image": "images/instruments/speculum.jpg",
     "order": 3,
     'qty': 1,
   },
@@ -36,7 +36,7 @@ const Map<String, Map<String, dynamic>> surgicalInstruments = {
     "name": "Conventional Scissor",
     "description":
         "A scissor with two blades used for cutting tissue and other materials.",
-    "image": "assets/images/instruments/con_scissor.png",
+    "image": "images/instruments/con_scissor.jpg",
     "order": 4,
     'qty': 1,
   },
@@ -44,7 +44,7 @@ const Map<String, Map<String, dynamic>> surgicalInstruments = {
     "name": "Spatula",
     "description":
         "A small implement with a broad, flat, flexible blade used to mix, spread, and lift material.",
-    "image": "assets/images/instruments/spatula.png",
+    "image": "images/instruments/spatula.jpg",
     "order": 5,
     'qty': 1,
   },
@@ -52,21 +52,21 @@ const Map<String, Map<String, dynamic>> surgicalInstruments = {
     "name": "Capsulorhexis Forceps",
     "description":
         "A forceps used to create a circular tear in the anterior capsule of the lens during cataract surgery.",
-    "image": "assets/images/instruments/cap_fx.png",
+    "image": "images/instruments/cap_fx.jpg",
     "order": 6,
     'qty': 1,
   },
   "suction_cannula": {
     "name": "Suction Cannula",
     "description": "A hollow tube used to remove fluid from a body cavity.",
-    "image": "assets/images/instruments/suction_cannula.png",
+    "image": "images/instruments/suction_cannula.jpg",
     "order": 7,
     'qty': 1,
   },
   "curved_cannula": {
     "name": "Curved Cannula",
     "description": "A hollow tube used to remove fluid from a body cavity.",
-    "image": "assets/images/instruments/curved_cannula.png",
+    "image": "images/instruments/curved_cannula.jpg",
     "order": 8,
     'qty': 1,
   },

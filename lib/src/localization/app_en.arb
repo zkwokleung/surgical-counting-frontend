@@ -110,5 +110,9 @@
   "noPreviewMsg": "No preview available",
   "@noPreviewMsg": {
     "description": ""
+  },
+  "sample": "Sample",
+  "@sample": {
+    "description": ""
   }
 }
