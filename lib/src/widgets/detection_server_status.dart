@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:surgical_counting/src/constants/design.dart';
 import 'package:surgical_counting/src/services/utils.dart';
 import 'package:surgical_counting/src/widgets/dash_card.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -38,7 +39,7 @@ class _DetectionServerStatusState extends State<DetectionServerStatus> {
   Widget build(BuildContext context) {
     return DashCard(
       title: AppLocalizations.of(context)!.serverStatus,
-      backgroundColor: Colors.grey[600],
+      backgroundColor: dashboardCardBackgroundColor,
       floatingActionButton: FloatingActionButton(
         onPressed: checkServerStatus,
         child: const Icon(Icons.refresh),

@@ -4,6 +4,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:surgical_counting/src/constants/design.dart';
 import 'package:surgical_counting/src/constants/instruments.dart';
 import 'package:surgical_counting/src/models/instruments.dart';
 import 'package:surgical_counting/src/services/predict.dart';
@@ -158,138 +159,145 @@ class _DetectionScreenState extends State<DetectionScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            // Left Panel
-            Expanded(
-              flex: 5,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  // Camera
-                  Expanded(
-                    child: DashCard(
-                      title: AppLocalizations.of(context)!.camera,
-                      backgroundColor: Colors.grey[600],
-                      floatingActionButton: FloatingActionButton(
-                        onPressed: toggleCamera,
-                        child: const Icon(Icons.camera_alt),
-                      ),
-                      child: isCameraOn
-                          ? Camera(camera: widget.camera)
-                          : Container(
-                              width: MediaQuery.of(context).size.width / 2.8,
-                              height: double.infinity,
-                              color: Colors.black,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  const Icon(
-                                    Icons.camera_alt,
-                                    color: Colors.white,
-                                  ),
-                                  Text(
-                                    AppLocalizations.of(context)!.camOffMsg,
-                                    style: const TextStyle(color: Colors.white),
-                                  ),
-                                ],
+      body: Container(
+        color: dashboardBackgroundColor,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              // Left Panel
+              Expanded(
+                flex: 5,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    // Camera
+                    Expanded(
+                      child: DashCard(
+                        title: AppLocalizations.of(context)!.camera,
+                        backgroundColor: dashboardCardBackgroundColor,
+                        floatingActionButton: FloatingActionButton(
+                          onPressed: toggleCamera,
+                          child: const Icon(Icons.camera_alt),
+                        ),
+                        child: isCameraOn
+                            ? Camera(camera: widget.camera)
+                            : Container(
+                                width: MediaQuery.of(context).size.width / 2.8,
+                                height: double.infinity,
+                                color: Colors.black,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    const Icon(
+                                      Icons.camera_alt,
+                                      color: Colors.white,
+                                    ),
+                                    Text(
+                                      AppLocalizations.of(context)!.camOffMsg,
+                                      style:
+                                          const TextStyle(color: Colors.white),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                    ),
-                  ),
-
-                  // Result
-                  Expanded(
-                    child: DashCard(
-                      title: AppLocalizations.of(context)!.detection,
-                      backgroundColor: Colors.grey[600],
-                      child: imageFile != null
-                          ? (kIsWeb)
-                              ? Image.network(imageFile!.path)
-                              : Image.file(
-                                  File(imageFile!.path),
-                                )
-                          : Container(
-                              color: Colors.black,
-                              width: MediaQuery.of(context).size.width / 2.8,
-                              height: double.infinity,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  const Icon(
-                                    Icons.image_not_supported,
-                                    color: Colors.white,
-                                  ),
-                                  Text(
-                                    AppLocalizations.of(context)!.noPreviewMsg,
-                                    style: const TextStyle(color: Colors.white),
-                                  ),
-                                ],
-                              ),
-                            ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            // Right Panel
-            Expanded(
-              flex: 5,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  // Information
-                  Expanded(
-                    flex: 8,
-                    child: DetectionInformationPannel(
-                      instrumentsStatus: instrumentsStatus,
-                    ),
-                  ),
-
-                  // Server Status
-                  const Expanded(flex: 2, child: DetectionServerStatus()),
-
-                  // Control Panel
-                  Expanded(
-                    flex: 2,
-                    child: DashCard(
-                      title: AppLocalizations.of(context)!.controlPanel,
-                      backgroundColor: Colors.grey[600],
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: ElevatedButton(
-                              onPressed: () {
-                                setState(() {
-                                  imageFile = null;
-                                  resetInstrumentsStatus();
-                                });
-                              },
-                              child: Text(AppLocalizations.of(context)!.clear),
-                            ),
-                          ),
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: predict,
-                              child:
-                                  Text(AppLocalizations.of(context)!.capture),
-                            ),
-                          ),
-                        ],
                       ),
                     ),
-                  ),
-                ],
+
+                    // Result
+                    Expanded(
+                      child: DashCard(
+                        title: AppLocalizations.of(context)!.detection,
+                        backgroundColor: dashboardCardBackgroundColor,
+                        child: imageFile != null
+                            ? (kIsWeb)
+                                ? Image.network(imageFile!.path)
+                                : Image.file(
+                                    File(imageFile!.path),
+                                  )
+                            : Container(
+                                color: Colors.black,
+                                width: MediaQuery.of(context).size.width / 2.8,
+                                height: double.infinity,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    const Icon(
+                                      Icons.image_not_supported,
+                                      color: Colors.white,
+                                    ),
+                                    Text(
+                                      AppLocalizations.of(context)!
+                                          .noPreviewMsg,
+                                      style:
+                                          const TextStyle(color: Colors.white),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+
+              // Right Panel
+              Expanded(
+                flex: 5,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    // Information
+                    Expanded(
+                      flex: 8,
+                      child: DetectionInformationPannel(
+                        instrumentsStatus: instrumentsStatus,
+                      ),
+                    ),
+
+                    // Server Status
+                    const Expanded(flex: 2, child: DetectionServerStatus()),
+
+                    // Control Panel
+                    Expanded(
+                      flex: 2,
+                      child: DashCard(
+                        title: AppLocalizations.of(context)!.controlPanel,
+                        backgroundColor: dashboardCardBackgroundColor,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: <Widget>[
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  setState(() {
+                                    imageFile = null;
+                                    resetInstrumentsStatus();
+                                  });
+                                },
+                                child:
+                                    Text(AppLocalizations.of(context)!.clear),
+                              ),
+                            ),
+                            Expanded(
+                              child: ElevatedButton(
+                                onPressed: predict,
+                                child:
+                                    Text(AppLocalizations.of(context)!.capture),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
