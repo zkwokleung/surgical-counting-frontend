@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:surgical_counting/src/screens/detection_screen.dart';
+import 'package:surgical_counting/src/screens/full_screen_camera_screen.dart';
 
 import 'settings/settings_controller.dart';
 
@@ -42,6 +43,8 @@ class App extends StatelessWidget {
               settings: routeSettings,
               builder: (BuildContext context) {
                 switch (routeSettings.name) {
+                  case FullScreenCameraScreen.routeName:
+                    return FullScreenCameraScreen(camera: camera);
                   case DetectionScreen.routeName:
                   default:
                     return DetectionScreen(camera: camera);

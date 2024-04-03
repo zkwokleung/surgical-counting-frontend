@@ -5,8 +5,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:surgical_counting/src/constants/design.dart';
+import 'package:surgical_counting/src/constants/hero_tags.dart';
 import 'package:surgical_counting/src/constants/instruments.dart';
 import 'package:surgical_counting/src/models/instruments.dart';
+import 'package:surgical_counting/src/screens/full_screen_camera_screen.dart';
 import 'package:surgical_counting/src/services/predict.dart';
 import 'package:surgical_counting/src/services/utils.dart';
 import 'package:surgical_counting/src/widgets/camera.dart';
@@ -56,6 +58,10 @@ class _DetectionScreenState extends State<DetectionScreen> {
     setState(() {
       isCameraOn = !isCameraOn;
     });
+  }
+
+  void openFullScreenCamera() {
+    Navigator.pushNamed(context, FullScreenCameraScreen.routeName);
   }
 
   Future<XFile> captureImage() async {
@@ -127,7 +133,7 @@ class _DetectionScreenState extends State<DetectionScreen> {
     // Camera initialization
     _cameraController = CameraController(
       widget.camera,
-      ResolutionPreset.medium,
+      ResolutionPreset.max,
     );
 
     _initializeCameraControllerFuture = _cameraController.initialize();
@@ -162,7 +168,7 @@ class _DetectionScreenState extends State<DetectionScreen> {
       body: Container(
         color: dashboardBackgroundColor,
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(16.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -178,12 +184,27 @@ class _DetectionScreenState extends State<DetectionScreen> {
                       child: DashCard(
                         title: AppLocalizations.of(context)!.camera,
                         backgroundColor: dashboardCardBackgroundColor,
-                        floatingActionButton: FloatingActionButton(
-                          onPressed: toggleCamera,
-                          child: const Icon(Icons.camera_alt),
+                        floatingActionButton: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: <Widget>[
+                            FloatingActionButton(
+                              onPressed: toggleCamera,
+                              child: const Icon(Icons.camera_alt),
+                            ),
+                            const SizedBox(
+                              width: dashboardSpaceBetweenFloatingButton,
+                            ),
+                            FloatingActionButton(
+                              onPressed: openFullScreenCamera,
+                              child: const Icon(Icons.zoom_out_map),
+                            ),
+                          ],
                         ),
                         child: isCameraOn
-                            ? Camera(camera: widget.camera)
+                            ? Hero(
+                                tag: cameraHeroTag,
+                                child: Camera(camera: widget.camera),
+                              )
                             : Container(
                                 width: MediaQuery.of(context).size.width / 2.8,
                                 height: double.infinity,
@@ -191,9 +212,12 @@ class _DetectionScreenState extends State<DetectionScreen> {
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: <Widget>[
-                                    const Icon(
-                                      Icons.camera_alt,
-                                      color: Colors.white,
+                                    const Hero(
+                                      tag: cameraUnavailableHeroTag,
+                                      child: Icon(
+                                        Icons.camera_alt,
+                                        color: Colors.white,
+                                      ),
                                     ),
                                     Text(
                                       AppLocalizations.of(context)!.camOffMsg,
@@ -204,6 +228,10 @@ class _DetectionScreenState extends State<DetectionScreen> {
                                 ),
                               ),
                       ),
+                    ),
+                    const SizedBox(
+                      width: dashboardSpaceBetweenCard,
+                      height: dashboardSpaceBetweenCard,
                     ),
 
                     // Result
@@ -243,6 +271,10 @@ class _DetectionScreenState extends State<DetectionScreen> {
                 ),
               ),
 
+              const SizedBox(
+                width: dashboardSpaceBetweenCard,
+                height: dashboardSpaceBetweenCard,
+              ),
               // Right Panel
               Expanded(
                 flex: 5,
@@ -257,8 +289,18 @@ class _DetectionScreenState extends State<DetectionScreen> {
                       ),
                     ),
 
+                    const SizedBox(
+                      width: dashboardSpaceBetweenCard,
+                      height: dashboardSpaceBetweenCard,
+                    ),
+
                     // Server Status
                     const Expanded(flex: 2, child: DetectionServerStatus()),
+
+                    const SizedBox(
+                      width: dashboardSpaceBetweenCard,
+                      height: dashboardSpaceBetweenCard,
+                    ),
 
                     // Control Panel
                     Expanded(
