@@ -61,7 +61,15 @@ class _DetectionScreenState extends State<DetectionScreen> {
   }
 
   void openFullScreenCamera() {
-    Navigator.pushNamed(context, FullScreenCameraScreen.routeName);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => FullScreenCameraScreen(
+          camera: widget.camera,
+          onTakePictureComplete: onTakePictureComplete,
+        ),
+      ),
+    );
   }
 
   Future<XFile> captureImage() async {
@@ -115,6 +123,13 @@ class _DetectionScreenState extends State<DetectionScreen> {
         print(e);
       }
     }
+  }
+
+  void onTakePictureComplete(XFile? file) {
+    setState(() {
+      imageFile = file;
+    });
+    Navigator.pop(context);
   }
 
   @override
@@ -189,7 +204,10 @@ class _DetectionScreenState extends State<DetectionScreen> {
                           children: <Widget>[
                             FloatingActionButton(
                               onPressed: toggleCamera,
-                              child: const Icon(Icons.camera_alt),
+                              // On/off button icon
+                              child: isCameraOn
+                                  ? const Icon(Icons.videocam)
+                                  : const Icon(Icons.videocam_off),
                             ),
                             const SizedBox(
                               width: dashboardSpaceBetweenFloatingButton,

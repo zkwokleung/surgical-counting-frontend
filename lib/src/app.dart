@@ -43,8 +43,6 @@ class App extends StatelessWidget {
               settings: routeSettings,
               builder: (BuildContext context) {
                 switch (routeSettings.name) {
-                  case FullScreenCameraScreen.routeName:
-                    return FullScreenCameraScreen(camera: camera);
                   case DetectionScreen.routeName:
                   default:
                     return DetectionScreen(camera: camera);

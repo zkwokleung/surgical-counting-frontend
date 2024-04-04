@@ -1,6 +1,7 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:surgical_counting/src/constants/design.dart';
 import 'package:surgical_counting/src/constants/hero_tags.dart';
 import 'package:surgical_counting/src/widgets/camera.dart';
@@ -64,7 +65,8 @@ class _FullScreenCameraScreenState extends State<FullScreenCameraScreen>
     }
   }
 
-  void onTakePictureComplete() {
+  void onTakePictureComplete() async {
+    await Future.delayed(const Duration(milliseconds: 500));
     if (widget.onTakePictureComplete != null) {
       widget.onTakePictureComplete!(capturedImageFile);
     }
@@ -80,6 +82,10 @@ class _FullScreenCameraScreenState extends State<FullScreenCameraScreen>
       ResolutionPreset.max,
     );
     _initializeCameraControllerFuture = _cameraController.initialize();
+    if (!kIsWeb) {
+      _cameraController
+          .lockCaptureOrientation(DeviceOrientation.landscapeRight);
+    }
 
     // Animations
     _controller = AnimationController(
