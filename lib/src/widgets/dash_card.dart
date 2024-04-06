@@ -32,21 +32,19 @@ class _DashCardState extends State<DashCard> {
         floatingActionButton: widget.floatingActionButton,
         body: Padding(
           padding: const EdgeInsets.all(12.0),
-          child: Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.title,
-                  style: TextStyle(
-                    fontSize: widget.textSize,
-                    fontWeight: widget.titleFontWeight,
-                  ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                widget.title,
+                style: TextStyle(
+                  fontSize: widget.textSize,
+                  fontWeight: widget.titleFontWeight,
                 ),
-                Expanded(child: Center(child: widget.child)),
-              ],
-            ),
+              ),
+              Expanded(child: Center(child: widget.child)),
+            ],
           ),
         ),
       ),

@@ -5,12 +5,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:surgical_counting/src/constants/design.dart';
-import 'package:surgical_counting/src/constants/hero_tags.dart';
 import 'package:surgical_counting/src/constants/instruments.dart';
 import 'package:surgical_counting/src/models/instruments.dart';
 import 'package:surgical_counting/src/screens/full_screen_camera_screen.dart';
 import 'package:surgical_counting/src/services/predict.dart';
 import 'package:surgical_counting/src/services/utils.dart';
+import 'package:surgical_counting/src/settings/settings_controller.dart';
 import 'package:surgical_counting/src/widgets/camera.dart';
 import 'package:surgical_counting/src/widgets/dash_card.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -20,8 +20,11 @@ import 'package:surgical_counting/src/widgets/detection_server_status.dart';
 class DetectionScreen extends StatefulWidget {
   const DetectionScreen({
     super.key,
+    required this.settingsController,
     required this.camera,
   });
+
+  final SettingsController settingsController;
 
   static const String routeName = '/detection';
 
@@ -45,6 +48,7 @@ class _DetectionScreenState extends State<DetectionScreen> {
 
   // Server status
   bool isServerOn = false;
+  bool isPredicting = false;
 
   // Instrument status
   late Map<String, dynamic> instrumentsStatus = {};
@@ -87,7 +91,7 @@ class _DetectionScreenState extends State<DetectionScreen> {
 
   void checkServerStatus() async {
     try {
-      final status = await getServerStatus();
+      final status = await getServerStatus(widget.settingsController);
       setState(() {
         isServerOn = status;
       });
@@ -99,12 +103,13 @@ class _DetectionScreenState extends State<DetectionScreen> {
   }
 
   void predict() async {
+    isPredicting = true;
     try {
       resetInstrumentsStatus();
 
       final XFile file = await captureImage();
+      final response = await postPrediction(widget.settingsController, file);
 
-      final response = await postPrediction(file);
       setState(() {
         imageFile = response.image;
         info = response.objects.toString();
@@ -123,6 +128,7 @@ class _DetectionScreenState extends State<DetectionScreen> {
         print(e);
       }
     }
+    isPredicting = false;
   }
 
   void onTakePictureComplete(XFile? file) {
@@ -219,10 +225,7 @@ class _DetectionScreenState extends State<DetectionScreen> {
                           ],
                         ),
                         child: isCameraOn
-                            ? Hero(
-                                tag: cameraHeroTag,
-                                child: Camera(camera: widget.camera),
-                              )
+                            ? Camera(camera: widget.camera)
                             : Container(
                                 width: MediaQuery.of(context).size.width / 2.8,
                                 height: double.infinity,
@@ -230,12 +233,9 @@ class _DetectionScreenState extends State<DetectionScreen> {
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: <Widget>[
-                                    const Hero(
-                                      tag: cameraUnavailableHeroTag,
-                                      child: Icon(
-                                        Icons.camera_alt,
-                                        color: Colors.white,
-                                      ),
+                                    const Icon(
+                                      Icons.camera_alt,
+                                      color: Colors.white,
                                     ),
                                     Text(
                                       AppLocalizations.of(context)!.camOffMsg,
@@ -257,32 +257,38 @@ class _DetectionScreenState extends State<DetectionScreen> {
                       child: DashCard(
                         title: AppLocalizations.of(context)!.detection,
                         backgroundColor: dashboardCardBackgroundColor,
-                        child: imageFile != null
-                            ? (kIsWeb)
-                                ? Image.network(imageFile!.path)
-                                : Image.file(
-                                    File(imageFile!.path),
-                                  )
-                            : Container(
-                                color: Colors.black,
-                                width: MediaQuery.of(context).size.width / 2.8,
-                                height: double.infinity,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: <Widget>[
-                                    const Icon(
-                                      Icons.image_not_supported,
-                                      color: Colors.white,
+                        child: isPredicting
+                            ? const Center(
+                                child: CircularProgressIndicator(),
+                              )
+                            : (imageFile != null
+                                ? (kIsWeb)
+                                    ? Image.network(imageFile!.path)
+                                    : Image.file(
+                                        File(imageFile!.path),
+                                      )
+                                : Container(
+                                    color: Colors.black,
+                                    width:
+                                        MediaQuery.of(context).size.width / 2.8,
+                                    height: double.infinity,
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: <Widget>[
+                                        const Icon(
+                                          Icons.image_not_supported,
+                                          color: Colors.white,
+                                        ),
+                                        Text(
+                                          AppLocalizations.of(context)!
+                                              .noPreviewMsg,
+                                          style: const TextStyle(
+                                              color: Colors.white),
+                                        ),
+                                      ],
                                     ),
-                                    Text(
-                                      AppLocalizations.of(context)!
-                                          .noPreviewMsg,
-                                      style:
-                                          const TextStyle(color: Colors.white),
-                                    ),
-                                  ],
-                                ),
-                              ),
+                                  )),
                       ),
                     ),
                   ],
@@ -303,6 +309,7 @@ class _DetectionScreenState extends State<DetectionScreen> {
                     Expanded(
                       flex: 8,
                       child: DetectionInformationPannel(
+                        settingsController: widget.settingsController,
                         instrumentsStatus: instrumentsStatus,
                       ),
                     ),
@@ -313,7 +320,11 @@ class _DetectionScreenState extends State<DetectionScreen> {
                     ),
 
                     // Server Status
-                    const Expanded(flex: 2, child: DetectionServerStatus()),
+                    Expanded(
+                      flex: 2,
+                      child: DetectionServerStatus(
+                          settingsController: widget.settingsController),
+                    ),
 
                     const SizedBox(
                       width: dashboardSpaceBetweenCard,
@@ -329,22 +340,27 @@ class _DetectionScreenState extends State<DetectionScreen> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: <Widget>[
+                            // Clear Button
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: ElevatedButton(
-                                onPressed: () {
-                                  setState(() {
-                                    imageFile = null;
-                                    resetInstrumentsStatus();
-                                  });
-                                },
+                                onPressed: imageFile == null
+                                    ? null
+                                    : () {
+                                        setState(() {
+                                          imageFile = null;
+                                          resetInstrumentsStatus();
+                                        });
+                                      },
                                 child:
                                     Text(AppLocalizations.of(context)!.clear),
                               ),
                             ),
+
+                            // Predict Button
                             Expanded(
                               child: ElevatedButton(
-                                onPressed: predict,
+                                onPressed: isCameraOn ? predict : null,
                                 child:
                                     Text(AppLocalizations.of(context)!.capture),
                               ),

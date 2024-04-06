@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:surgical_counting/src/screens/detection_screen.dart';
-import 'package:surgical_counting/src/screens/full_screen_camera_screen.dart';
 
 import 'settings/settings_controller.dart';
 
@@ -45,7 +44,8 @@ class App extends StatelessWidget {
                 switch (routeSettings.name) {
                   case DetectionScreen.routeName:
                   default:
-                    return DetectionScreen(camera: camera);
+                    return DetectionScreen(
+                        settingsController: settingsController, camera: camera);
                 }
               },
             );

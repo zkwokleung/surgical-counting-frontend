@@ -1,13 +1,18 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:surgical_counting/src/constants/backend.dart';
 import 'package:surgical_counting/src/constants/design.dart';
 import 'package:surgical_counting/src/constants/instruments.dart';
+import 'package:surgical_counting/src/settings/settings_controller.dart';
 import 'package:surgical_counting/src/widgets/dash_card.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class DetectionInformationPannel extends StatefulWidget {
   const DetectionInformationPannel(
-      {super.key, required this.instrumentsStatus});
+      {super.key,
+      required this.settingsController,
+      required this.instrumentsStatus});
+
+  final SettingsController settingsController;
 
   final Map<String, dynamic> instrumentsStatus;
 
@@ -44,9 +49,9 @@ class _DetectionInformationPannelState
                   // Name
                   1: FlexColumnWidth(0.25),
                   // Image
-                  2: FlexColumnWidth(0.5),
+                  2: FlexColumnWidth(0.45),
                   // Order
-                  3: FlexColumnWidth(0.1),
+                  3: FlexColumnWidth(0.15),
                   // Quantity
                   4: FlexColumnWidth(0.1),
                 },
@@ -79,10 +84,12 @@ class _DetectionInformationPannelState
                         color: dashboardTableHeaderColor,
                         child: Padding(
                           padding: dashboardTableHeaderPadding,
-                          child: Text(
-                            AppLocalizations.of(context)!.sample,
-                            style: const TextStyle(
-                                color: dashboardTableHeaderTextColor),
+                          child: Center(
+                            child: Text(
+                              AppLocalizations.of(context)!.sample,
+                              style: const TextStyle(
+                                  color: dashboardTableHeaderTextColor),
+                            ),
                           ),
                         ),
                       ),
@@ -143,13 +150,17 @@ class _DetectionInformationPannelState
                         ),
 
                         // Image
-                        Image.asset(
-                          surgicalInstruments[key]!['image'],
+                        Image.network(
+                          widget.settingsController.apiUrl +
+                              instrumentImageSingleRoute +
+                              key,
+                          errorBuilder: (context, error, stackTrace) =>
+                              Image.asset(
+                            surgicalInstruments[key]!['image'],
+                            errorBuilder: (context, error, stackTrace) =>
+                                const Icon(Icons.error),
+                          ),
                         ),
-                        // Image(
-                        //   image:
-                        //       AssetImage(surgicalInstruments[key]!['image']),
-                        // ),
 
                         // Order
                         Padding(

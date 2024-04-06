@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:surgical_counting/src/constants/design.dart';
 import 'package:surgical_counting/src/constants/hero_tags.dart';
 import 'package:surgical_counting/src/widgets/camera.dart';
-import 'package:surgical_counting/src/widgets/dash_card.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class FullScreenCameraScreen extends StatefulWidget {

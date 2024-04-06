@@ -114,5 +114,25 @@
   "sample": "Sample",
   "@sample": {
     "description": ""
+  },
+  "serverSettings": "Server Settings",
+  "@serverSettings": {
+    "description": ""
+  },
+  "serverAddress": "Server Address",
+  "@serverAddress": {
+    "description": ""
+  },
+  "serverPort": "Server Port",
+  "@serverPort": {
+    "description": ""
+  },
+  "save": "Save",
+  "@save": {
+    "description": ""
+  },
+  "settingsSaved": "Settings saved",
+  "@settingsSaved": {
+    "description": ""
   }
 }
