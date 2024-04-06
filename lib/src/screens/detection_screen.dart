@@ -54,7 +54,7 @@ class _DetectionScreenState extends State<DetectionScreen> {
   late Map<String, dynamic> instrumentsStatus = {};
 
   void resetInstrumentsStatus() {
-    instrumentsStatus = Map.from(surgicalInstruments
+    instrumentsStatus = Map.from(defaultInstrumentsData
         .map((key, value) => MapEntry(key, InstrumentStatus())));
   }
 
@@ -117,7 +117,7 @@ class _DetectionScreenState extends State<DetectionScreen> {
 
       // Update instruments status
       for (int i = 0; i < response.objects.length; i++) {
-        final instrument = surgicalInstruments[response.objects[i].item2];
+        final instrument = defaultInstrumentsData[response.objects[i].item2];
         if (instrument != null) {
           instrumentsStatus[response.objects[i].item2]!.qty += 1;
           instrumentsStatus[response.objects[i].item2]!.order = i;

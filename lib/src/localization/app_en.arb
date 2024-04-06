@@ -134,5 +134,25 @@
   "settingsSaved": "Settings saved",
   "@settingsSaved": {
     "description": ""
+  },
+  "instrumentDetails": "Instrument Details",
+  "@instrumentDetails": {
+    "description": ""
+  },
+  "instrument": "Instrument",
+  "@instrument": {
+    "description": ""
+  },
+  "instrumentName": "Instrument Name",
+  "@instrumentName": {
+    "description": ""
+  },
+  "instrumentId": "Instrument ID",
+  "@instrumentId": {
+    "description": ""
+  },
+  "close": "Close",
+  "@close": {
+    "description": ""
   }
 }

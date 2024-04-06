@@ -5,6 +5,7 @@ import 'package:surgical_counting/src/constants/instruments.dart';
 import 'package:surgical_counting/src/settings/settings_controller.dart';
 import 'package:surgical_counting/src/widgets/dash_card.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:surgical_counting/src/widgets/instrument_details.dart';
 
 class DetectionInformationPannel extends StatefulWidget {
   const DetectionInformationPannel(
@@ -24,7 +25,18 @@ class DetectionInformationPannel extends StatefulWidget {
 class _DetectionInformationPannelState
     extends State<DetectionInformationPannel> {
   bool verifyInstrumentsStatus(String key) {
-    return widget.instrumentsStatus[key]!.passed(surgicalInstruments[key]!);
+    return widget.instrumentsStatus[key]!.passed(defaultInstrumentsData[key]!);
+  }
+
+  void showInstrumentDetails(String instrumentId) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return InstrumentDetails(
+            settingsController: widget.settingsController,
+            instrumentId: instrumentId);
+      },
+    );
   }
 
   @override
@@ -38,153 +50,86 @@ class _DetectionInformationPannelState
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              Table(
-                border: const TableBorder(
-                  horizontalInside:
-                      BorderSide(width: 1.0, color: dashboardTableBorderColor),
-                ),
-                columnWidths: const <int, TableColumnWidth>{
-                  // Passed
-                  0: FlexColumnWidth(0.05),
-                  // Name
-                  1: FlexColumnWidth(0.25),
-                  // Image
-                  2: FlexColumnWidth(0.45),
-                  // Order
-                  3: FlexColumnWidth(0.15),
-                  // Quantity
-                  4: FlexColumnWidth(0.1),
-                },
+              DataTable(
+                headingRowColor:
+                    MaterialStateProperty.all(dashboardTableHeaderColor),
+                showCheckboxColumn: false,
+                columnSpacing: 2.0,
+                horizontalMargin: 0.0,
+                columns: <DataColumn>[
+                  const DataColumn(label: Text("")),
+                  DataColumn(label: Text(AppLocalizations.of(context)!.object)),
+                  DataColumn(label: Text(AppLocalizations.of(context)!.sample)),
+                  DataColumn(label: Text(AppLocalizations.of(context)!.order)),
+                  DataColumn(
+                      label: Text(AppLocalizations.of(context)!.quantity)),
+                ],
+                rows: defaultInstrumentsData.keys.map<DataRow>((key) {
+                  final instrumentStatus = widget.instrumentsStatus[key]!;
+                  final isPassed = verifyInstrumentsStatus(key);
+                  final orderColor = instrumentStatus.order ==
+                          defaultInstrumentsData[key]!['order']
+                      ? Colors.green
+                      : Colors.red[900];
+                  final qtyColor = instrumentStatus.qty ==
+                          defaultInstrumentsData[key]!['qty']
+                      ? Colors.green
+                      : Colors.red[900];
 
-                // Title Row
-                children: <TableRow>[
-                  TableRow(
-                    children: <Widget>[
-                      Container(
-                        color: dashboardTableHeaderColor,
-                        child: const Padding(
-                          padding: dashboardTableHeaderPadding,
-                          child: Text(""),
-                        ),
-                      ),
-
-                      // Name
-                      Container(
-                        color: dashboardTableHeaderColor,
-                        child: Padding(
-                          padding: dashboardTableHeaderPadding,
-                          child: Text(AppLocalizations.of(context)!.object,
-                              style: const TextStyle(
-                                  color: dashboardTableHeaderTextColor)),
-                        ),
-                      ),
-
-                      // Image
-                      Container(
-                        color: dashboardTableHeaderColor,
-                        child: Padding(
-                          padding: dashboardTableHeaderPadding,
-                          child: Center(
-                            child: Text(
-                              AppLocalizations.of(context)!.sample,
-                              style: const TextStyle(
-                                  color: dashboardTableHeaderTextColor),
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      // Order
-                      Container(
-                        color: dashboardTableHeaderColor,
-                        child: Padding(
-                          padding: dashboardTableHeaderPadding,
-                          child: Center(
-                            child: Text(
-                              AppLocalizations.of(context)!.order,
-                              style: const TextStyle(
-                                  color: dashboardTableHeaderTextColor),
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      // Quantity
-                      Container(
-                        color: dashboardTableHeaderColor,
-                        child: Padding(
-                          padding: dashboardTableHeaderPadding,
-                          child: Center(
-                              child: Text(
-                            AppLocalizations.of(context)!.quantity,
-                            style: const TextStyle(
-                                color: dashboardTableHeaderTextColor),
-                          )),
-                        ),
-                      ),
-                    ],
-                  ),
-                  for (final key in surgicalInstruments.keys)
-                    TableRow(
-                      children: <Widget>[
-                        // Pass
-                        TableCell(
-                          verticalAlignment: TableCellVerticalAlignment.fill,
+                  return DataRow(
+                    onSelectChanged: (selected) {
+                      if (selected!) {
+                        showInstrumentDetails(key);
+                      }
+                    },
+                    cells: <DataCell>[
+                      DataCell(
+                        SizedBox(
+                          width: double.infinity,
+                          height: double.infinity,
                           child: Container(
-                            color: verifyInstrumentsStatus(key)
-                                ? Colors.green
-                                : Colors.red[900],
+                            color: isPassed ? Colors.green : Colors.red[900],
                             child: Icon(
-                              verifyInstrumentsStatus(key)
-                                  ? Icons.check
-                                  : Icons.close,
+                              isPassed ? Icons.check : Icons.close,
                             ),
                           ),
                         ),
-
-                        // Name
+                      ),
+                      DataCell(
                         Padding(
                           padding:
                               const EdgeInsets.fromLTRB(8.0, 2.0, 8.0, 2.0),
-                          child: Text(surgicalInstruments[key]!['name']),
+                          child: Text(defaultInstrumentsData[key]!['name']),
                         ),
-
-                        // Image
+                      ),
+                      DataCell(
                         Image.network(
                           widget.settingsController.apiUrl +
                               instrumentImageSingleRoute +
                               key,
                           errorBuilder: (context, error, stackTrace) =>
                               Image.asset(
-                            surgicalInstruments[key]!['image'],
+                            defaultInstrumentsData[key]!['image'],
                             errorBuilder: (context, error, stackTrace) =>
                                 const Icon(Icons.error),
                           ),
                         ),
-
-                        // Order
+                      ),
+                      DataCell(
                         Padding(
                           padding:
                               const EdgeInsets.fromLTRB(8.0, 2.0, 8.0, 2.0),
                           child: Center(
                             child: Text(
-                              style: TextStyle(
-                                color: widget.instrumentsStatus[key]!.order ==
-                                        surgicalInstruments[key]!['order']
-                                    ? Colors.green
-                                    : Colors.red[900],
-                              ),
-                              widget.instrumentsStatus[key]!.qty > 1
-                                  ? 'MUL'
-                                  : (widget.instrumentsStatus[key]!.order < 0
-                                      ? 'DNE'
-                                      : widget.instrumentsStatus[key]!.order
-                                          .toString()),
+                              instrumentStatus.order < 0
+                                  ? 'DNE'
+                                  : instrumentStatus.order.toString(),
+                              style: TextStyle(color: orderColor),
                             ),
                           ),
                         ),
-
-                        // Quantity
+                      ),
+                      DataCell(
                         Padding(
                           padding:
                               const EdgeInsets.fromLTRB(8.0, 2.0, 8.0, 2.0),
@@ -192,20 +137,17 @@ class _DetectionInformationPannelState
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
                               Text(
-                                  style: TextStyle(
-                                    color: widget.instrumentsStatus[key]!.qty ==
-                                            surgicalInstruments[key]!['qty']
-                                        ? Colors.green
-                                        : Colors.red[900],
-                                  ),
-                                  "${widget.instrumentsStatus[key]!.qty}"),
-                              Text("/${surgicalInstruments[key]!['qty']}"),
+                                "${instrumentStatus.qty}",
+                                style: TextStyle(color: qtyColor),
+                              ),
+                              Text("/${defaultInstrumentsData[key]!['qty']}"),
                             ],
                           ),
                         ),
-                      ],
-                    ),
-                ],
+                      ),
+                    ],
+                  );
+                }).toList(),
               ),
             ],
           ),

@@ -16,10 +16,14 @@ class SettingsController with ChangeNotifier {
   late String _apiUrl;
   String get apiUrl => _apiUrl;
 
+  late Map<String, Map<String, dynamic>> _instruments;
+  Map<String, Map<String, dynamic>> get instruments => _instruments;
+
   Future<void> loadSettings() async {
     _themeMode = await _settingsService.themeMode();
     _language = await _settingsService.language();
     _apiUrl = await _settingsService.apiUrl();
+    _instruments = await _settingsService.instruments();
 
     notifyListeners();
   }
@@ -54,5 +58,16 @@ class SettingsController with ChangeNotifier {
     notifyListeners();
 
     await _settingsService.updateApiUrl(newApiUrl);
+  }
+
+  Future<void> updateInstruments(
+      Map<String, Map<String, dynamic>> newInstruments) async {
+    if (newInstruments == _instruments) return;
+
+    _instruments = newInstruments;
+
+    notifyListeners();
+
+    await _settingsService.updateInstruments(newInstruments);
   }
 }

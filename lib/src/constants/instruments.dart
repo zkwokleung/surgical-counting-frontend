@@ -1,5 +1,5 @@
 // A dictionary of all the instruments and their data
-const Map<String, Map<String, dynamic>> surgicalInstruments = {
+const Map<String, Map<String, dynamic>> defaultInstrumentsData = {
   'iris_scissor': {
     'name': 'Iris Scissor',
     'description':
