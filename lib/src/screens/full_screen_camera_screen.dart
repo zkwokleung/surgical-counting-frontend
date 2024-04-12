@@ -3,7 +3,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:surgical_counting/src/constants/design.dart';
-import 'package:surgical_counting/src/constants/hero_tags.dart';
 import 'package:surgical_counting/src/widgets/camera.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -173,12 +172,9 @@ class _FullScreenCameraScreenState extends State<FullScreenCameraScreen>
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
-                          const Hero(
-                            tag: cameraUnavailableHeroTag,
-                            child: Icon(
-                              Icons.camera_alt,
-                              color: Colors.white,
-                            ),
+                          Icon(
+                            Icons.camera_alt,
+                            color: Colors.white,
                           ),
                           Text(
                             AppLocalizations.of(context)!.camOffMsg,

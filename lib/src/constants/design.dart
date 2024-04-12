@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
+// TODO: use a lighter color for the background
 const dashboardBackgroundColor = Color(0x12151fff);
 const dashboardCardBackgroundColor = Color(0x242147ff);
 const dashboardTableBorderColor = Color(0xaaaaaaff);

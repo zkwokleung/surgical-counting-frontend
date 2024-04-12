@@ -41,7 +41,8 @@ class _DetectionScreenState extends State<DetectionScreen> {
   late Future<void> _initializeCameraControllerFuture;
 
   // Image
-  XFile? imageFile;
+  // XFile? resultImageFile;
+  Uint8List? resultImageBytes;
 
   // Info
   String info = '';
@@ -65,6 +66,11 @@ class _DetectionScreenState extends State<DetectionScreen> {
   }
 
   void openFullScreenCamera() {
+    // Restart the camera
+    if (isCameraOn) {
+      toggleCamera();
+    }
+
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -102,16 +108,16 @@ class _DetectionScreenState extends State<DetectionScreen> {
     }
   }
 
-  void predict() async {
+  void predict(XFile image) async {
     isPredicting = true;
     try {
       resetInstrumentsStatus();
 
-      final XFile file = await captureImage();
-      final response = await postPrediction(widget.settingsController, file);
+      final response = await postPrediction(widget.settingsController, image);
 
       setState(() {
-        imageFile = response.image;
+        // resultImageFile = response.image;
+        resultImageBytes = response.bytes;
         info = response.objects.toString();
       });
 
@@ -132,10 +138,11 @@ class _DetectionScreenState extends State<DetectionScreen> {
   }
 
   void onTakePictureComplete(XFile? file) {
-    setState(() {
-      imageFile = file;
-    });
     Navigator.pop(context);
+
+    if (file == null) return;
+    // Run detection
+    predict(file);
   }
 
   @override
@@ -257,16 +264,39 @@ class _DetectionScreenState extends State<DetectionScreen> {
                       child: DashCard(
                         title: AppLocalizations.of(context)!.detection,
                         backgroundColor: dashboardCardBackgroundColor,
+                        floatingActionButton: FloatingActionButton(
+                          onPressed: () {
+                            // Display the image in fullscreen with a return button
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => Scaffold(
+                                  body: Center(
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        Navigator.pop(context);
+                                      },
+                                      child: Image.memory(
+                                        resultImageBytes!,
+                                        fit: BoxFit.contain,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                          child: const Icon(Icons.zoom_out_map),
+                        ),
                         child: isPredicting
                             ? const Center(
                                 child: CircularProgressIndicator(),
                               )
-                            : (imageFile != null
-                                ? (kIsWeb)
-                                    ? Image.network(imageFile!.path)
-                                    : Image.file(
-                                        File(imageFile!.path),
-                                      )
+                            : (resultImageBytes != null)
+                                ? Image.memory(
+                                    resultImageBytes!,
+                                    fit: BoxFit.cover,
+                                  )
                                 : Container(
                                     color: Colors.black,
                                     width:
@@ -288,7 +318,7 @@ class _DetectionScreenState extends State<DetectionScreen> {
                                         ),
                                       ],
                                     ),
-                                  )),
+                                  ),
                       ),
                     ),
                   ],
@@ -344,11 +374,11 @@ class _DetectionScreenState extends State<DetectionScreen> {
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: ElevatedButton(
-                                onPressed: imageFile == null
+                                onPressed: resultImageBytes == null
                                     ? null
                                     : () {
                                         setState(() {
-                                          imageFile = null;
+                                          resultImageBytes = null;
                                           resetInstrumentsStatus();
                                         });
                                       },
@@ -360,7 +390,12 @@ class _DetectionScreenState extends State<DetectionScreen> {
                             // Predict Button
                             Expanded(
                               child: ElevatedButton(
-                                onPressed: isCameraOn ? predict : null,
+                                onPressed: isCameraOn
+                                    ? () => {
+                                          captureImage()
+                                              .then((value) => predict(value))
+                                        }
+                                    : null,
                                 child:
                                     Text(AppLocalizations.of(context)!.capture),
                               ),

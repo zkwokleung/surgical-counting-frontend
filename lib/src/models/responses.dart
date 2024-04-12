@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:camera/camera.dart';
 
@@ -21,9 +22,10 @@ class PredictRequestBody {
 
 class PredictResponse {
   final XFile image;
+  final Uint8List? bytes;
   final List<Tuple2<int, String>> objects;
 
-  PredictResponse(this.image, this.objects);
+  PredictResponse(this.image, this.objects, {this.bytes});
 
   factory PredictResponse.fromJson(Map<String, dynamic> json) {
     final objects = <Tuple2<int, String>>[];
@@ -35,6 +37,6 @@ class PredictResponse {
     final bytes = base64Decode(json['image']);
     final image = XFile.fromData(bytes);
 
-    return PredictResponse(image, objects);
+    return PredictResponse(image, objects, bytes: bytes);
   }
 }
