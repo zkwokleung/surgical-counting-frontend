@@ -15,3 +15,5 @@ const dashboardSpaceBetweenFloatingButton = 16.0;
 
 const fullScreenCameraBackgroundColor = Color(0x000000ff);
 const fullScreenCameraBorderColor = Color(0x242147ff);
+
+const errorFontColor = Color.fromARGB(255, 255, 63, 63);

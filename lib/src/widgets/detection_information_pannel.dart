@@ -70,11 +70,11 @@ class _DetectionInformationPannelState
                   final orderColor = instrumentStatus.order ==
                           defaultInstrumentsData[key]!['order']
                       ? Colors.green
-                      : Colors.red[900];
+                      : errorFontColor;
                   final qtyColor = instrumentStatus.qty ==
                           defaultInstrumentsData[key]!['qty']
                       ? Colors.green
-                      : Colors.red[900];
+                      : errorFontColor;
 
                   return DataRow(
                     onSelectChanged: (selected) {
@@ -88,7 +88,7 @@ class _DetectionInformationPannelState
                           width: double.infinity,
                           height: double.infinity,
                           child: Container(
-                            color: isPassed ? Colors.green : Colors.red[900],
+                            color: isPassed ? Colors.green : errorFontColor,
                             child: Icon(
                               isPassed ? Icons.check : Icons.close,
                             ),

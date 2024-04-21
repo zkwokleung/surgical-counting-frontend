@@ -140,7 +140,7 @@ class _DetectionServerStatusState extends State<DetectionServerStatus> {
                 Text('${AppLocalizations.of(context)!.status}: '),
                 Icon(
                   isServerOn ? Icons.check_circle : Icons.cancel,
-                  color: isServerOn ? Colors.green : Colors.red[900],
+                  color: isServerOn ? Colors.green : errorFontColor,
                 ),
                 const Text(' '),
                 Text(
@@ -148,7 +148,7 @@ class _DetectionServerStatusState extends State<DetectionServerStatus> {
                       ? AppLocalizations.of(context)!.serverStatusOk
                       : AppLocalizations.of(context)!.serverStatusUnavailable,
                   style: TextStyle(
-                      color: isServerOn ? Colors.green : Colors.red[900]),
+                      color: isServerOn ? Colors.green : errorFontColor),
                 ),
               ],
             ),
