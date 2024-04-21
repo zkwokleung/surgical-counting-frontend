@@ -48,7 +48,6 @@ class _DetectionScreenState extends State<DetectionScreen> {
   String info = '';
 
   // Server status
-  bool isServerOn = false;
   bool isPredicting = false;
 
   // Instrument status
@@ -95,19 +94,6 @@ class _DetectionScreenState extends State<DetectionScreen> {
     }
   }
 
-  void checkServerStatus() async {
-    try {
-      final status = await getServerStatus(widget.settingsController);
-      setState(() {
-        isServerOn = status;
-      });
-    } catch (e) {
-      if (kDebugMode) {
-        print(e);
-      }
-    }
-  }
-
   void predict(XFile image) async {
     isPredicting = true;
     try {
@@ -130,8 +116,12 @@ class _DetectionScreenState extends State<DetectionScreen> {
         }
       }
     } catch (e) {
-      if (kDebugMode) {
-        print(e);
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.predictionFailed),
+          ),
+        );
       }
     }
     isPredicting = false;

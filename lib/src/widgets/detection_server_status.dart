@@ -97,6 +97,7 @@ class _DetectionServerStatusState extends State<DetectionServerStatus> {
                     content: Text(AppLocalizations.of(context)!.settingsSaved),
                   ),
                 );
+                checkServerStatus();
               },
               child: Text(AppLocalizations.of(context)!.save),
             ),

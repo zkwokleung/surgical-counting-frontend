@@ -154,5 +154,13 @@
   "close": "Close",
   "@close": {
     "description": ""
+  },
+  "serverOffMsg": "Server is off",
+  "@serverOffMsg": {
+    "description": ""
+  },
+  "predictionFailed": "Prediction failed",
+  "@predictionFailed": {
+    "description": ""
   }
 }
